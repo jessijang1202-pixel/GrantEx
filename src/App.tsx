@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, ExternalLink, Building2, Calendar, CircleDollarSign, Loader2, CalendarDays, LayoutGrid, ChevronLeft, ChevronRight, MapPin, Users, Menu, X, Download } from 'lucide-react';
+import { Search, Filter, ExternalLink, Building2, Calendar, CircleDollarSign, Loader2, CalendarDays, LayoutGrid, ChevronLeft, ChevronRight, MapPin, Users, Menu, X } from 'lucide-react';
 
 interface Grant {
   id: string;
@@ -196,16 +196,6 @@ export default function App() {
             />
           </div>
 
-          {/* Direct Download Button */}
-          <button 
-            onClick={() => { window.location.href = '/api/download-source'; }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors ml-2 shrink-0"
-            title="현재 소스 코드 다운로드"
-          >
-            <Download size={16} />
-            <span className="hidden sm:inline">코드 다운로드</span>
-          </button>
-          
           {/* Mobile Menu Button */}
           <button 
             className="md:hidden p-2 text-slate-500 hover:text-slate-800 focus:outline-none"
