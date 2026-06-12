@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Search, Filter, ExternalLink, Building2, Calendar, CircleDollarSign, Loader2, CalendarDays, LayoutGrid, ChevronLeft, ChevronRight, MapPin, Users, Menu, X } from 'lucide-react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { Search, Filter, ExternalLink, Building2, Calendar, CircleDollarSign, Loader2, CalendarDays, LayoutGrid, ChevronLeft, ChevronRight, MapPin, Users, Menu, X, RefreshCw } from 'lucide-react';
 
 interface Grant {
   id: string;
@@ -18,6 +18,9 @@ interface Grant {
 export default function App() {
   const [grants, setGrants] = useState<Grant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState('');
+  const [isLiveData, setIsLiveData] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
   // Filters (Multi-select)
@@ -33,23 +36,33 @@ export default function App() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const sources = ['K-Startup', '소상공인24', '모두의 창업'];
+  const sources = ['기업마당', 'K-Startup', '소상공인24'];
   const categories = ['사업화', 'R&D', '기술지원', '공간지원', '자금/인력'];
   const targets = ['예비창업자', '초기창업(3년이내)', '도약기(7년이내)', '재창업자', '소상공인'];
   const regions = ['전국', '서울', '경기', '비수도권'];
 
-  useEffect(() => {
-    fetch('/api/grants')
+  const fetchGrants = useCallback((refresh = false) => {
+    if (refresh) setIsRefreshing(true);
+    else setLoading(true);
+
+    const url = refresh ? `/api/grants?t=${Date.now()}` : '/api/grants';
+    fetch(url)
       .then(res => res.json())
       .then(data => {
         setGrants(data.grants || []);
+        setLastUpdated(data.lastUpdated || '');
+        setIsLiveData(data.source === 'live');
         setLoading(false);
+        setIsRefreshing(false);
       })
       .catch(err => {
-        console.error("Failed to fetch", err);
+        console.error('Failed to fetch', err);
         setLoading(false);
+        setIsRefreshing(false);
       });
   }, []);
+
+  useEffect(() => { fetchGrants(); }, [fetchGrants]);
 
   const filteredGrants = grants.filter(grant => {
     const matchesSearch = grant.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -184,20 +197,30 @@ export default function App() {
           </a>
         </nav>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           <div className="relative hidden lg:block w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input 
-              type="text" 
-              placeholder="지원사업명, 기관 검색..." 
+            <input
+              type="text"
+              placeholder="지원사업명, 기관 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-1.5 bg-slate-100 hover:bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:bg-white focus:border-blue-400 focus:outline-none transition-all placeholder-slate-400"
             />
           </div>
 
+          <button
+            onClick={() => fetchGrants(true)}
+            disabled={isRefreshing || loading}
+            title="최신 공고 새로고침"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-500 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <RefreshCw size={13} className={isRefreshing ? 'animate-spin' : ''} />
+            <span>새로고침</span>
+          </button>
+
           {/* Mobile Menu Button */}
-          <button 
+          <button
             className="md:hidden p-2 text-slate-500 hover:text-slate-800 focus:outline-none"
             onClick={() => setIsMobileMenuOpen(true)}
           >
@@ -286,9 +309,9 @@ export default function App() {
                      viewMode === 'calendar' ? '마감일 캘린더' : '맞춤형 지원금 추천'}
                   </h1>
                   <p className="text-slate-500 text-sm">
-                    {viewMode === 'grid' 
-                      ? `총 1,248개 중 조건에 맞는 등록 무료 지원금 ${filteredGrants.length}건을 찾았습니다.`
-                      : viewMode === 'calendar' 
+                    {viewMode === 'grid'
+                      ? `${isLiveData ? '기업마당 실시간 연동' : '기본 데이터'} · 조건에 맞는 지원금 ${filteredGrants.length}건`
+                      : viewMode === 'calendar'
                       ? '조건에 맞는 지원금의 접수 마감일을 월별로 확인하세요.'
                       : '작성하신 프로필 정보를 바탕으로 가장 합격률이 높은 지원사업을 추천해 드립니다.'}
                   </p>
@@ -311,9 +334,16 @@ export default function App() {
                     <span className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-100 px-3 py-1.5 rounded-lg font-bold shadow-sm">매칭 알고리즘 최적화 98%</span>
                   </div>
                 ) : (
-                  <div className="hidden sm:flex space-x-2">
-                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg font-bold shadow-sm">K-Startup</span>
-                    <span className="text-xs bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg font-bold shadow-sm">소상공인24</span>
+                  <div className="hidden sm:flex items-center space-x-2">
+                    {isLiveData ? (
+                      <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg font-bold shadow-sm flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        실시간 연동
+                      </span>
+                    ) : (
+                      <span className="text-xs bg-slate-100 text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg font-bold shadow-sm">기본 데이터</span>
+                    )}
+                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg font-bold shadow-sm">기업마당</span>
                   </div>
                 )}
               </div>
@@ -378,7 +408,7 @@ export default function App() {
                         <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
                           <div className="text-[15px] font-bold text-slate-800 flex items-center gap-1.5">
                             <CircleDollarSign size={16} className="text-blue-500" />
-                            {grant.amount}
+                            {grant.amount || '공고 확인'}
                           </div>
                           <div className="text-[11px] text-slate-400 font-medium px-2 py-1 bg-slate-50 rounded border border-slate-100 flex items-center gap-1">
                             {grant.agency.length > 8 ? `${grant.agency.substring(0, 8)}...` : grant.agency}
@@ -453,7 +483,7 @@ export default function App() {
                           <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
                             <div className="text-[15px] font-bold text-indigo-700 flex items-center gap-1.5">
                               <CircleDollarSign size={16} className="text-indigo-500" />
-                              {grant.amount}
+                              {grant.amount || '공고 확인'}
                             </div>
                             <div className="text-[11px] text-slate-500 font-medium px-2 py-1 bg-slate-100 rounded flex items-center gap-1">
                               {grant.agency.length > 8 ? `${grant.agency.substring(0, 8)}...` : grant.agency}
@@ -523,10 +553,24 @@ export default function App() {
 
           {/* Bottom Toolbar */}
           <footer className="h-12 bg-slate-900 text-white flex items-center justify-between px-8 text-xs shrink-0">
-            <div className="flex items-center space-x-6">
-              <span>업데이트: 2026.04.21 14:00</span>
+            <div className="flex items-center space-x-4">
+              <span className="flex items-center gap-1.5">
+                {isLiveData ? (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                ) : (
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                )}
+                {isLiveData ? '실시간' : '기본 데이터'}
+              </span>
               <span className="opacity-50">|</span>
-              <span className="hidden sm:inline">연동기관: K-Startup, 소상공인24, 기업마당, 모두의창업</span>
+              <span>
+                업데이트:{' '}
+                {lastUpdated
+                  ? new Date(lastUpdated).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                  : '로딩 중'}
+              </span>
+              <span className="opacity-50 hidden sm:inline">|</span>
+              <span className="hidden sm:inline">출처: 기업마당(bizinfo.go.kr)</span>
             </div>
             <div className="flex items-center space-x-4">
               <a href="#" className="hover:underline">개인정보처리방침</a>
