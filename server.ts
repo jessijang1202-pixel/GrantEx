@@ -69,7 +69,7 @@ async function startServer() {
           amount: '최대 1억원',
           deadline: '2026-06-15',
           status: '접수마감임박',
-          url: 'https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do',
+          url: 'https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000119019',
           target: '예비창업자',
           region: '전국'
         },
@@ -82,7 +82,7 @@ async function startServer() {
           amount: '최대 1억원',
           deadline: '2026-06-24',
           status: '접수중',
-          url: 'https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do',
+          url: 'https://www.bizinfo.go.kr/web/lay1/bbs/S1T12C128/AS/74/view.do?pblancId=PBLN_000000000117819',
           target: '초기창업(3년이내)',
           region: '전국'
         },
@@ -108,7 +108,7 @@ async function startServer() {
           amount: '최대 1억원',
           deadline: '2026-06-10',
           status: '마감',
-          url: 'https://start.kosmes.or.kr/',
+          url: 'https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=310&bcIdx=1056086&parentSeq=1056086',
           target: '초기창업(3년이내)',
           region: '서울'
         },
@@ -121,7 +121,7 @@ async function startServer() {
           amount: '최대 4,000만원',
           deadline: '2026-07-10',
           status: '접수예정',
-          url: 'https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do',
+          url: 'https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000120120',
           target: '도약기(7년이내)',
           region: '비수도권'
         },
@@ -147,7 +147,7 @@ async function startServer() {
           amount: '최대 6,000만원',
           deadline: '2026-06-20',
           status: '접수중',
-          url: 'https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do',
+          url: 'https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000118399',
           target: '재창업자',
           region: '전국'
         }
