@@ -69,7 +69,7 @@ async function startServer() {
           amount: '최대 1억원',
           deadline: '2026-06-15',
           status: '접수마감임박',
-          url: 'https://www.k-startup.go.kr/common/announcement/announcementList.do?mid=10681&bid=701',
+          url: 'https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do',
           target: '예비창업자',
           region: '전국'
         },
@@ -82,7 +82,7 @@ async function startServer() {
           amount: '최대 1억원',
           deadline: '2026-06-24',
           status: '접수중',
-          url: 'https://www.k-startup.go.kr/common/announcement/announcementList.do?mid=10681&bid=701',
+          url: 'https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do',
           target: '초기창업(3년이내)',
           region: '전국'
         },
@@ -121,7 +121,7 @@ async function startServer() {
           amount: '최대 4,000만원',
           deadline: '2026-07-10',
           status: '접수예정',
-          url: 'https://www.k-startup.go.kr/common/announcement/announcementList.do?mid=10681&bid=701',
+          url: 'https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do',
           target: '도약기(7년이내)',
           region: '비수도권'
         },
@@ -147,7 +147,7 @@ async function startServer() {
           amount: '최대 6,000만원',
           deadline: '2026-06-20',
           status: '접수중',
-          url: 'https://www.k-startup.go.kr/common/announcement/announcementList.do?mid=10681&bid=701',
+          url: 'https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do',
           target: '재창업자',
           region: '전국'
         }
